@@ -3,6 +3,8 @@
     "cheerio": "^1.0.0-rc.2",
     "feedparser": "^2.2.7",
     "node-europa": "^4.0.0",
+    "node-rake": "^1.0.0",
+    "promise-retry": "^1.1.1",
     "puppeteer": "^1.0.0",
     "request": "^2.83.0",
     "request-promise-native": "^1.0.5",

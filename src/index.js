@@ -1,6 +1,6 @@
 
-const request = require('request-promise-native')
 const puppeteer = require('puppeteer')
+const retryPromise = require('promise-retry')
 const cheerio = require('cheerio')
 const sqlite = require('sqlite')
 const Td = require('turndown')
@@ -77,11 +77,13 @@ const labelExisting = async links => {
   return results
 }
 
-const downloadArticle = async link => {
+const downloadArticle = async (browser, link) => {
   try {
-    const browser = await puppeteer.launch()
     const page = await browser.newPage()
-    await page.goto(link)
+
+    await retryPromise(retry => {
+      return page.goto(link, {timeout: 60000}).catch(retry)
+    })
 
     const content = {
       title: await page.$eval(constants.selectors.title, div => div.textContent),
@@ -91,7 +93,7 @@ const downloadArticle = async link => {
     const rawContent = await page.$eval(constants.selectors.rawContent, div => div.innerHTML)
 
     content.body = new Td().turndown(rawContent)
-    await browser.close()
+    await page.close()
 
     return content
 
@@ -124,12 +126,14 @@ const downloadMissingContent = async links => {
     return !post.exists
   })
 
+  const browser = await puppeteer.launch()
+
   for (let {link} of required) {
 
     ++count
     winston.info(`downloading and storing ${link} (${count} of ${required.length})`)
 
-    storeArticle(db, link, await downloadArticle(link))
+    storeArticle(db, link, await downloadArticle(browser, link))
   }
 }
 
