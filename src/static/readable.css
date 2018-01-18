@@ -1,5 +1,7 @@
+
 html * {
   font-family: 'Lora', sans-serif;
+  font-size: 1.01em;
 }
 
 article {
@@ -23,13 +25,13 @@ body {
   line-height: 150%;
 }
 
-body.h1 {
+h1 {
   color: #000;
   font-size: 36px;
   letter-spacing: -0.05rem;
 }
 
-body.a {
+a {
   color: rgb(19, 127, 179);
 }
 
