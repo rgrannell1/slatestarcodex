@@ -27,7 +27,7 @@ const renderHTML = async () => {
 			const markdown = [
 				`# ${data.title}`,
 				'',
-				`Published on ${data.date}`,
+				`Slate Star Codex · ${data.date}`,
 				'',
 				data.body
 			].join('\n')

@@ -31,3 +31,13 @@ body.h1 {
 body.a {
   color: rgb(19, 127, 179);
 }
+
+blockquote {
+  border-left: 5px solid #ddd;
+  padding-left: 20px;
+  margin: 20px 0px;
+}
+
+#sharethis, #sharethis + ul {
+  display: none;
+}
