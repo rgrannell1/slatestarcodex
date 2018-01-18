@@ -5,33 +5,7 @@ const cheerio = require('cheerio')
 const sqlite = require('sqlite')
 const Td = require('turndown')
 const winston = require('winston')
-
-const constants = {
-  regexps: {
-    article: /\/slatestarcodex.com\/2[0-9]{3}\/[0-9]+\/[0-9]+/i
-  },
-  selectors: {
-    link: '#pjgm-content a',
-    title: '.pjgm-posttitle',
-    date: 'span.entry-date',
-    rawContent: 'div.pjgm-postcontent'
-  },
-  urls: {
-    slateStarCodex: 'http://slatestarcodex.com/archives/'
-  },
-  queries: { },
-  paths: {
-    database: './data/content.sqlite'
-  }
-}
-
-constants.queries.getByUrl = 'SELECT * FROM Content WHERE url = ?'
-constants.queries.createTable = `CREATE TABLE IF NOT EXISTS Content (
-  url TEXT PRIMARY KEY,
-  content BLOB NOT NULL
-)`
-
-constants.queries.insertContent = 'INSERT INTO Content (url, content) VALUES ($url, $content)'
+const constants = require('../constants')
 
 /**
  * Retrieve a list of articles from SlateStarCodex
@@ -82,6 +56,8 @@ const labelExisting = async links => {
       results.push({err, link})
     }
   }
+
+  db.close()
 
   winston.info(`finished determining which posts are stored locally (${results.filter(link => link.exists).length} of ${results.length})`)
 
@@ -136,7 +112,7 @@ const storeArticle = async (db, link, content) => {
     })
 
   } catch (err) {
-    console.log(err)
+    logger.error(`an error occurred while storing content: ${err.message}`)
   }
 }
 
@@ -165,6 +141,8 @@ const downloadMissingContent = async links => {
 
     storeArticle(db, link, await downloadArticle(browser, link))
   }
+
+  db.close()
 }
 
 /**

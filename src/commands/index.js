@@ -1,4 +1,5 @@
 
 module.exports = {
-	download: require('./download')
+	download: require('./download'),
+	render: require('./render')
 }
