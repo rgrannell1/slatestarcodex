@@ -1,0 +1,33 @@
+html * {
+  font-family: 'Lora', sans-serif;
+}
+
+article {
+  margin-bottom: 200px;
+}
+
+body {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.01rem;
+  word-wrap: break-word;
+  text-rendering: optimizeLegibility;
+
+  max-width: 660px;
+  box-sizing: border-box;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+body.h1 {
+  color: #000;
+  font-size: 36px;
+  letter-spacing: -0.05rem;
+}
+
+body.a {
+  color: rgb(19, 127, 179);
+}

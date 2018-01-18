@@ -16,12 +16,13 @@ const parseEntry = ({url, content}) => {
  *
  * @return {string} return a HTML document.
  */
-const renderArticles = async () => {
+const renderHTML = async () => {
 	const db = await sqlite.open(constants.paths.database)
 
 	const posts = await db.all(constants.queries.retrieveAll)
 	const body = posts
 		.map(parseEntry)
+		.slice(0, 10)
 		.map(data => {
 			const markdown = [
 				`# ${data.title}`,
@@ -31,7 +32,11 @@ const renderArticles = async () => {
 				data.body
 			].join('\n')
 
-			return new showdown.Converter().makeHtml(markdown)
+			return [
+				'<article>',
+				new showdown.Converter().makeHtml(markdown),
+				'</article>'
+			].join('\n');
 		})
 
 	const read = fs.readFileSync(constants.paths.template).toString()
@@ -44,10 +49,14 @@ const renderArticles = async () => {
 	db.close()
 }
 
+const renderPDF = async () => {
+
+}
+
 module.exports = async () => {
   // load from database
 
   const db = await sqlite.open(constants.paths.database)
-  const rendered = await renderArticles()
+  const rendered = await renderHTML()
 
 }
