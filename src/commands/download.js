@@ -33,6 +33,11 @@ constants.queries.createTable = `CREATE TABLE IF NOT EXISTS Content (
 
 constants.queries.insertContent = 'INSERT INTO Content (url, content) VALUES ($url, $content)'
 
+/**
+ * Retrieve a list of articles from SlateStarCodex
+ *
+ * @return {Array<String>} a list of links.
+ */
 const retrieveLinks = async () => {
   const browser = await puppeteer.launch()
   const page = await browser.newPage()
@@ -53,6 +58,12 @@ const retrieveLinks = async () => {
   return kept
 }
 
+/**
+ * Find links that are not stored in the local database.
+ *
+ * @param  {Array<string>} links an array of strings.
+ * @return {Array<string>} a subset of links.
+ */
 const labelExisting = async links => {
   const db = await sqlite.open(constants.paths.database)
 
@@ -77,6 +88,13 @@ const labelExisting = async links => {
   return results
 }
 
+/**
+ * Download an article as structured content.
+ *
+ * @param  {Object} browser a puppeteer browser instance.
+ * @param  {string} link    a url to an article.
+ * @return {Object}         structured content extracted from a link.
+ */
 const downloadArticle = async (browser, link) => {
   try {
     const page = await browser.newPage()
@@ -85,14 +103,13 @@ const downloadArticle = async (browser, link) => {
       return page.goto(link, {timeout: 60000}).catch(retry)
     })
 
+    const rawContent = await page.$eval(constants.selectors.rawContent, div => div.innerHTML)
     const content = {
       title: await page.$eval(constants.selectors.title, div => div.textContent),
-      date: await page.$eval(constants.selectors.date, div => div.textContent)
+      date: await page.$eval(constants.selectors.date, div => div.textContent),
+      body: new Td().turndown(rawContent)
     }
 
-    const rawContent = await page.$eval(constants.selectors.rawContent, div => div.innerHTML)
-
-    content.body = new Td().turndown(rawContent)
     await page.close()
 
     return content
@@ -103,6 +120,14 @@ const downloadArticle = async (browser, link) => {
   }
 }
 
+/**
+ * Write an article to the local database.
+ *
+ * @param  {Object} db      the database client.
+ * @param  {string} link    a URL to an article.
+ * @param  {object} content structured content downloaded from the article
+ * @return {undefined}
+ */
 const storeArticle = async (db, link, content) => {
   try {
     await db.run(constants.queries.insertContent, {
@@ -115,6 +140,11 @@ const storeArticle = async (db, link, content) => {
   }
 }
 
+/**
+ * Download articles that aren't stored in the local database.
+ *
+ * @param  {Array<String>} links URL's pointing to SlateStarCodex articles.
+ */
 const downloadMissingContent = async links => {
   const db = await sqlite.open(constants.paths.database)
 
@@ -137,9 +167,12 @@ const downloadMissingContent = async links => {
   }
 }
 
-const main = async () => {
+/**
+ * Download SlateStarCodex articles, as markdown, to a database. Idempotent.
+ *
+ * @return {undefined}.
+ */
+module.exports = async () => {
   const links = await retrieveLinks()
   const status = await downloadMissingContent(links)
 }
-
-main()

@@ -2,6 +2,7 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
     "feedparser": "^2.2.7",
+    "neodoc": "^1.4.0",
     "node-europa": "^4.0.0",
     "node-rake": "^1.0.0",
     "promise-retry": "^1.1.1",
