@@ -9,6 +9,21 @@ Extract posts from http://slatestarcodex.com/ and render them as a PDF.
 
 SlateStarCodex is an excellent blog, and I like to read it on my Kindle. I don't find the site itself that readable, and given that the blog is a collection of essay's it makes sense to compile it into book-format.  
 
+## Installation (Linux)
+
+First, install node.js.
+
+```bash
+curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
+sudo apt-get install -y nodejs
+```
+
+Then, install dependencies.
+
+```bash
+npm install // or yarn, if you prefer
+```
+
 ## Usage
 
 ```bash
