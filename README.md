@@ -22,6 +22,8 @@ Note that this program runs slowly, deliberatly. The blog's [robots.txt](http://
 
 I don't own any of the content this program extracts; again, these belong to Scott Alexander of http://slatestarcodex.com/.
 
+This project will be kept in a working state, but no enhancements are planned.
+
 ## Enhancements
 
 - [ ] Generically "better" CSS
