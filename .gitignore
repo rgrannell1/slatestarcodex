@@ -1,2 +1,4 @@
-data/
+data/content.sqlite
+data/site.html
+data/site.pdf
 node_modules/
