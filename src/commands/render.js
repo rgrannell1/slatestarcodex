@@ -4,6 +4,7 @@ const sqlite = require('sqlite')
 const winston = require('winston')
 const showdown = require('showdown')
 const mustache = require('mustache')
+const puppeteer = require('puppeteer')
 const constants = require('../constants')
 
 const parseEntry = ({url, content}) => {
@@ -21,8 +22,8 @@ const renderHTML = async () => {
 
 	const posts = await db.all(constants.queries.retrieveAll)
 	const body = posts
+		.slice(100)
 		.map(parseEntry)
-		.slice(0, 10)
 		.map(data => {
 			const markdown = [
 				`# ${data.title}`,
@@ -43,20 +44,26 @@ const renderHTML = async () => {
 	const rendered = mustache.render(read, {
 		body: body.join('\n')
 	})
-
-	fs.writeFileSync('foo.html', rendered)
-
+	fs.writeFileSync(constants.paths.site, rendered)
 	db.close()
 }
 
 const renderPDF = async () => {
+  const browser = await puppeteer.launch({
+  	headless: true,
+  	timeout: constants.timeout.loadRenderedSite
+  })
+  const page = await browser.newPage()
+  await page.goto(`file://${constants.paths.site}`)
+  await page.pdf({
+  	path: constants.paths.pdf
+  })
 
+  await browser.close()
 }
 
 module.exports = async () => {
-  // load from database
-
   const db = await sqlite.open(constants.paths.database)
   const rendered = await renderHTML()
-
+  await renderPDF()
 }
