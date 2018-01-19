@@ -22,6 +22,11 @@ Note that this program runs slowly, deliberatly. The blog's [robots.txt](http://
 
 I don't own any of the content this program extracts; again, these belong to Scott Alexander of http://slatestarcodex.com/.
 
+## Enhancements
+
+[] Generically "Better" CSS
+[] Remove Open Thread posts
+
 ## License
 
 MIT License
