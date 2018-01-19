@@ -24,8 +24,8 @@ I don't own any of the content this program extracts; again, these belong to Sco
 
 ## Enhancements
 
-[] Generically "Better" CSS
-[] Remove Open Thread posts
+- [ ] Generically "Better" CSS
+- [ ] Remove Open Thread posts
 
 ## License
 
