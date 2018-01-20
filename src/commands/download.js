@@ -38,7 +38,7 @@ const retrieveLinks = async () => {
  * @param  {Array<string>} links an array of strings.
  * @return {Array<string>} a subset of links.
  */
-const labelExisting = async links => {
+const findMissingLinks = async links => {
   const db = await sqlite.open(constants.paths.database)
 
   const results = []
@@ -125,7 +125,7 @@ const downloadMissingContent = async links => {
   const db = await sqlite.open(constants.paths.database)
 
   await db.all(constants.queries.createTable)
-  const labeled = await labelExisting(links)
+  const labeled = await findMissingLinks(links)
   let count = 0
 
   const required = labeled.filter(post => {
