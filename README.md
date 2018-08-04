@@ -7,7 +7,7 @@ Extract posts from http://slatestarcodex.com/ and render them as a PDF.
 
 ## Why?
 
-SlateStarCodex is an excellent blog, and I like to read it on my Kindle. I don't find the site itself that readable, and given that the blog is a collection of essay's it makes sense to compile it into book-format.
+SlateStarCodex is an excellent blog, and I like to read it on my Kindle. I don't find the site itself that readable, and given that the blog is a collection of essays it makes sense to compile it into book-format.
 
 ## Usage
 
@@ -22,7 +22,7 @@ Note that this program runs slowly, deliberatly. The blog's [robots.txt](http://
 
 I don't own any of the content this program extracts; again, these belong to Scott Alexander of http://slatestarcodex.com/.
 
-The styling roughly follows the [following guide](https://ux.stackexchange.com/a/3623).
+The styling roughly follows the [following guide](https://ux.stackexchange.com/a/3623). Feel free to send PRs to improve this stylesheet.
 
 This project will be kept in a working state, but no enhancements are planned.
 
