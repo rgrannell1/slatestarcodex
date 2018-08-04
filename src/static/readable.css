@@ -1,7 +1,7 @@
 
 html * {
   font-family: 'Lora', sans-serif;
-  font-size: 1.05em;
+  font-size: 1.2em;
 }
 
 article {
@@ -17,11 +17,8 @@ body {
   word-wrap: break-word;
   text-rendering: optimizeLegibility;
 
-  max-width: 660px;
   box-sizing: border-box;
   display: block;
-  margin-left: auto;
-  margin-right: auto;
   line-height: 1.7;
 }
 
@@ -51,5 +48,5 @@ p, blockquote {
 }
 
 @page {
-  margin: 10mm;
+  margin: 25mm;
 }

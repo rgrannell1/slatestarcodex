@@ -1,5 +1,4 @@
 
-module.exports = {
-	download: require('./download'),
-	render: require('./render')
-}
+const index = require('@rgrannell/index')
+
+module.exports = index.load({source: __dirname})

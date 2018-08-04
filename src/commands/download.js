@@ -1,18 +1,21 @@
 
+const chalk = require('chalk')
+const cheerio = require('cheerio')
+const constants = require('../constants')
+const pulp = require('@rgrannell/pulp')
 const puppeteer = require('puppeteer')
 const retryPromise = require('promise-retry')
-const cheerio = require('cheerio')
 const sqlite = require('sqlite')
 const Td = require('turndown')
-const winston = require('winston')
-const constants = require('../constants')
 
 /**
  * Retrieve a list of articles from SlateStarCodex
  *
+ * @param {EventEmitter} emitter the pulp event-emitter
+ *
  * @return {Array<String>} a list of links.
  */
-const retrieveLinks = async () => {
+const retrieveLinks = async emitter => {
   const browser = await puppeteer.launch()
   const page = await browser.newPage()
   await page.goto(constants.urls.slateStarCodex)
@@ -27,7 +30,7 @@ const retrieveLinks = async () => {
     return constants.regexps.article.test(link)
   })
 
-  winston.info(`Retrieved ${links.length} links from ${constants.urls.slateStarCodex}; storing ${kept.length} of them.`)
+  emitter.emit(pulp.events.subTaskProgress, `Retrieved ${links.length} links from "${chalk.bold(constants.urls.slateStarCodex)}"; storing ${kept.length} of them.`)
 
   return kept
 }
@@ -36,13 +39,16 @@ const retrieveLinks = async () => {
  * Find links that are not stored in the local database.
  *
  * @param  {Array<string>} links an array of strings.
+ * @param {EventEmitter} emitter the pulp event-emitter
+ *
  * @return {Array<string>} a subset of links.
  */
-const findMissingLinks = async links => {
+const findMissingLinks = async (links, emitter) => {
   const db = await sqlite.open(constants.paths.database)
 
   const results = []
-  winston.info(`determining which posts are stored locally.`)
+
+  emitter.emit(pulp.events.subTaskProgress, `determining which posts are stored locally.`)
 
   for (let link of links) {
     try {
@@ -59,7 +65,7 @@ const findMissingLinks = async links => {
 
   db.close()
 
-  winston.info(`finished determining which posts are stored locally (${results.filter(link => link.exists).length} of ${results.length})`)
+  emitter.emit(pulp.events.subTaskProgress, `finished determining which posts are stored locally (${results.filter(link => link.exists).length} of ${results.length})`)
 
   return results
 }
@@ -69,6 +75,7 @@ const findMissingLinks = async links => {
  *
  * @param  {Object} browser a puppeteer browser instance.
  * @param  {string} link    a url to an article.
+ *
  * @return {Object}         structured content extracted from a link.
  */
 const downloadArticle = async (browser, link) => {
@@ -102,6 +109,7 @@ const downloadArticle = async (browser, link) => {
  * @param  {Object} db      the database client.
  * @param  {string} link    a URL to an article.
  * @param  {object} content structured content downloaded from the article
+ *
  * @return {undefined}
  */
 const storeArticle = async (db, link, content) => {
@@ -120,12 +128,14 @@ const storeArticle = async (db, link, content) => {
  * Download articles that aren't stored in the local database.
  *
  * @param  {Array<String>} links URL's pointing to SlateStarCodex articles.
+ * @param {EventEmitter} emitter the pulp event-emitter
+ *
  */
-const downloadMissingContent = async links => {
+const downloadMissingContent = async (links, emitter) => {
   const db = await sqlite.open(constants.paths.database)
 
   await db.all(constants.queries.createTable)
-  const labeled = await findMissingLinks(links)
+  const labeled = await findMissingLinks(links, emitter)
   let count = 0
 
   const required = labeled.filter(post => {
@@ -137,8 +147,8 @@ const downloadMissingContent = async links => {
   for (let {link} of required) {
 
     ++count
-    winston.info(`downloading and storing ${link} (${count} of ${required.length})`)
 
+    emitter.emit(pulp.events.subTaskProgress, `downloading and storing "${chalk.bold(link)}" (${count} of ${required.length})`)
     storeArticle(db, link, await downloadArticle(browser, link))
   }
 
@@ -150,7 +160,14 @@ const downloadMissingContent = async links => {
  *
  * @return {undefined}.
  */
-module.exports = async () => {
-  const links = await retrieveLinks()
-  const status = await downloadMissingContent(links)
+const command = {
+  name: 'download',
+  dependencies: []
 }
+
+command.task = async (_, emitter) => {
+  const links = await retrieveLinks(emitter)
+  const status = await downloadMissingContent(links, emitter)
+}
+
+module.exports = command
