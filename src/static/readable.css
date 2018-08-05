@@ -29,6 +29,11 @@ h1 {
   page-break-before: always;
 }
 
+#ssc_title {
+  font-size: 72px;
+  text-align: 'center';
+}
+
 a {
   color: rgb(19, 127, 179);
 }

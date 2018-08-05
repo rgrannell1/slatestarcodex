@@ -19,9 +19,9 @@ node cli.js render
 ```
 ## Notes
 
-Note that this program runs slowly, deliberatly. The blog's [robots.txt](http://slatestarcodex.com/robots.txt) doesn't specifiy a rate-limit, but I  don't want to accidentally DOS the site. All downloads run sequentially, and a local copy of posts is maintained in a database.
+Note that this program is deliberatly slow. The blog's [robots.txt](http://slatestarcodex.com/robots.txt) doesn't specifiy a rate-limit, but I  don't want to accidentally DOS the site. All downloads run sequentially, and a local copy of posts is maintained in a database.
 
-I don't own any of the content this program extracts, nor the logo `codex.png`; again, these belong to Scott Alexander of http://slatestarcodex.com/.
+I don't own any of the content this program extracts, nor the logo `codex.png`; these belong to Scott Alexander of http://slatestarcodex.com/.
 
 The styling roughly follows the [following guide](https://ux.stackexchange.com/a/3623). Feel free to send PRs to improve this stylesheet.
 
