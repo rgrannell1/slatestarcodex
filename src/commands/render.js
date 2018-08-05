@@ -1,5 +1,5 @@
 
-const fs = require('fs')
+const fs = require('fs').promises
 const pulp = require('@rgrannell/pulp')
 const sqlite = require('sqlite')
 const showdown = require('showdown')
@@ -47,12 +47,18 @@ const renderHTML = async (paths, emitter) => {
 			].join('\n');
 		})
 
-	const read = fs.readFileSync(constants.paths.template).toString()
+	const read = (await fs.readFile(constants.paths.template)).toString()
 	const rendered = mustache.render(read, {
 		body: body.join('\n')
 	})
-	fs.writeFileSync(constants.paths.site, rendered)
+
+  await fs.writeFile(constants.paths.site, rendered)
 	db.close()
+}
+
+const getDocumentSize = async fpath => {
+  const stat = await fs.stat(fpath)
+  return (stat.size / 1e6).toFixed(1)
 }
 
 /**
@@ -62,14 +68,24 @@ const renderHTML = async (paths, emitter) => {
  *
  * @return {Promise} a result promise
  */
-const renderPDFToHtml = async paths => {
+const renderPDFToHtml = async (paths, emitter) => {
   const browser = await puppeteer.launch({
   	headless: true,
   	timeout: constants.timeout.loadRenderedSite
   })
   const page = await browser.newPage()
-  await page.goto(`file://${paths.site}`)
+
+  emitter.emit(pulp.events.subTaskProgress, `Loading SlateStarCodex HTML (${await getDocumentSize(paths.site)}Mb)`)
+
+  await page.goto(`file://${paths.site}`, {
+    timeout: 0
+  })
+
+  emitter.emit(pulp.events.subTaskProgress, `Rendering SlateStarCodex to PDF ⚗️`)
+
   await page.pdf({path: paths.pdf})
+
+  emitter.emit(pulp.events.subTaskProgress, `Finished rendering SlateStarCodex PDF (${await getDocumentSize(paths.pdf)}) ⚗️`)
 
   await browser.close()
 }
