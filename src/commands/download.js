@@ -152,6 +152,8 @@ const downloadMissingContent = async (links, emitter) => {
     storeArticle(db, link, await downloadArticle(browser, link))
   }
 
+  await browser.close()
+
   db.close()
 }
 
