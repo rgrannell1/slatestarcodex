@@ -8,6 +8,8 @@ const retryPromise = require('promise-retry')
 const sqlite = require('sqlite')
 const Td = require('turndown')
 
+const dbUtils = require('../shared/database')
+
 /**
  * Retrieve a list of articles from SlateStarCodex
  *
@@ -104,31 +106,6 @@ const downloadArticle = async (browser, link) => {
 }
 
 /**
- * Write an article to the local database.
- *
- * @param  {Object} db      the database client.
- * @param  {string} link    a URL to an article.
- * @param  {object} content structured content downloaded from the article
- *
- * @return {undefined}
- */
-const storeArticle = async (db, link, content, {mode}) => {
-  const query = mode === 'insert'
-    ? constants.queries.insertContent
-    : constants.queries.updateContent
-
-  try {
-    await db.run(query, {
-      $url: link,
-      $content: JSON.stringify(content)
-    })
-
-  } catch (err) {
-    console.error(`an error occurred while storing content: ${err.message}`)
-  }
-}
-
-/**
  * Download articles that aren't stored in the local database.
  *
  * @param  {Array<String>} links URL's pointing to SlateStarCodex articles.
@@ -153,7 +130,7 @@ const downloadMissingContent = async (links, emitter) => {
     ++count
 
     emitter.emit(pulp.events.subTaskProgress, `downloading and storing "${chalk.bold(link)}" (${count} of ${required.length})`)
-    storeArticle(db, link, await downloadArticle(browser, link), {
+    dbUtils.storeArticle(db, link, await downloadArticle(browser, link), {
       mode: 'insert'
     })
   }
@@ -174,31 +151,6 @@ annotations.links = (data, metadata) => {
 
   return metadata
 }
-
-/**
- * Add annotations to each SQL entry.
- *
- * @return {undefined}
- */
-const annotateEntries = async () => {
-  const db = await sqlite.open(constants.paths.database)
-
-  db.each(constants.queries.retrieveAll, async (err, row) => {
-    const data = JSON.parse(row.content)
-    data.metadata = {tags: []}
-
-    for (const annotation of Object.keys(annotations)) {
-      data.metadata = annotations[annotation](data, data.metadata)
-    }
-
-    await storeArticle(db, row.url, data, {
-      mode: 'update'
-    })
-  })
-
-  db.close()
-}
-
 /**
  * Download SlateStarCodex articles, as markdown, to a database. Idempotent.
  *
@@ -209,10 +161,12 @@ const command = {
   dependencies: []
 }
 
-command.task = async (_, emitter) => {
+
+command.task = async (_, emitter, tasks) => {
   const links = await retrieveLinks(emitter)
   const status = await downloadMissingContent(links, emitter)
-  await annotateEntries()
+
+  await tasks.annotate.task(null, emitter)
 }
 
 module.exports = command

@@ -1,11 +1,13 @@
 {
   "name": "slatestarcodex",
   "dependencies": {
-    "@rgrannell/index": "8.1.0-alpha.849b3614",
-    "@rgrannell/pulp": "8.1.0",
+    "@rgrannell/index": "../utils/packages/index",
+    "@rgrannell/pulp": "../utils/packages/pulp",
+    "chai": "4.2.0",
     "chalk": "2.4.1",
     "cheerio": "1.0.0-rc.2",
     "feedparser": "2.2.7",
+    "moment": "2.23.0",
     "mustache": "2.3.0",
     "neodoc": "1.4.0",
     "node-europa": "4.0.0",
