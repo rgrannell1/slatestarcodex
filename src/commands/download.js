@@ -112,15 +112,19 @@ const downloadArticle = async (browser, link) => {
  *
  * @return {undefined}
  */
-const storeArticle = async (db, link, content) => {
+const storeArticle = async (db, link, content, {mode}) => {
+  const query = mode === 'insert'
+    ? constants.queries.insertContent
+    : constants.queries.updateContent
+
   try {
-    await db.run(constants.queries.insertContent, {
+    await db.run(query, {
       $url: link,
       $content: JSON.stringify(content)
     })
 
   } catch (err) {
-    logger.error(`an error occurred while storing content: ${err.message}`)
+    console.error(`an error occurred while storing content: ${err.message}`)
   }
 }
 
@@ -149,10 +153,48 @@ const downloadMissingContent = async (links, emitter) => {
     ++count
 
     emitter.emit(pulp.events.subTaskProgress, `downloading and storing "${chalk.bold(link)}" (${count} of ${required.length})`)
-    storeArticle(db, link, await downloadArticle(browser, link))
+    storeArticle(db, link, await downloadArticle(browser, link), {
+      mode: 'insert'
+    })
   }
 
   await browser.close()
+
+  db.close()
+}
+
+const annotations = {}
+
+annotations.links = (data, metadata) => {
+  const {title} = data
+
+  if (title.includes('Links') || title.includes('links')) {
+    metadata.tags.push('links')
+  }
+
+  return metadata
+}
+
+/**
+ * Add annotations to each SQL entry.
+ *
+ * @return {undefined}
+ */
+const annotateEntries = async () => {
+  const db = await sqlite.open(constants.paths.database)
+
+  db.each(constants.queries.retrieveAll, async (err, row) => {
+    const data = JSON.parse(row.content)
+    data.metadata = {tags: []}
+
+    for (const annotation of Object.keys(annotations)) {
+      data.metadata = annotations[annotation](data, data.metadata)
+    }
+
+    await storeArticle(db, row.url, data, {
+      mode: 'update'
+    })
+  })
 
   db.close()
 }
@@ -170,6 +212,7 @@ const command = {
 command.task = async (_, emitter) => {
   const links = await retrieveLinks(emitter)
   const status = await downloadMissingContent(links, emitter)
+  await annotateEntries()
 }
 
 module.exports = command

@@ -1,24 +1,24 @@
 {
   "name": "slatestarcodex",
   "dependencies": {
-    "@rgrannell/index": "^8.1.0-alpha.849b3614",
-    "@rgrannell/pulp": "^8.1.0",
-    "chalk": "^2.4.1",
-    "cheerio": "^1.0.0-rc.2",
-    "feedparser": "^2.2.7",
-    "mustache": "^2.3.0",
-    "neodoc": "^1.4.0",
-    "node-europa": "^4.0.0",
-    "node-rake": "^1.0.0",
-    "promise-retry": "^1.1.1",
-    "puppeteer": "^1.0.0",
-    "request": "^2.83.0",
-    "request-promise-native": "^1.0.5",
-    "showdown": "^1.8.6",
-    "sqlite": "^2.9.2",
-    "turndown": "^4.0.1"
+    "@rgrannell/index": "8.1.0-alpha.849b3614",
+    "@rgrannell/pulp": "8.1.0",
+    "chalk": "2.4.1",
+    "cheerio": "1.0.0-rc.2",
+    "feedparser": "2.2.7",
+    "mustache": "2.3.0",
+    "neodoc": "1.4.0",
+    "node-europa": "4.0.0",
+    "node-rake": "1.0.0",
+    "promise-retry": "1.1.1",
+    "puppeteer": "1.0.0",
+    "request": "2.83.0",
+    "request-promise-native": "1.0.5",
+    "showdown": "1.8.6",
+    "sqlite": "2.9.2",
+    "turndown": "4.0.1"
   },
   "devDependencies": {
-    "why-is-node-running": "^2.0.2"
+    "why-is-node-running": "2.0.2"
   }
 }

@@ -33,6 +33,9 @@ constants.queries.createTable = `CREATE TABLE IF NOT EXISTS Content (
 )`
 
 constants.queries.insertContent = 'INSERT INTO Content (url, content) VALUES ($url, $content)'
+constants.queries.updateContent = `UPDATE Content
+SET url = $url, content = $content
+WHERE url = $url`
 constants.queries.retrieveAll = 'SELECT url, content FROM Content'
 
 module.exports = constants
