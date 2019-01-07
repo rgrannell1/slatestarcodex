@@ -13,7 +13,9 @@ I wanted to read SlateStarCodex on my Kindle.
 ## Usage
 
 ```bash
+node cli.js annotate
 node cli.js download
+node cli.js extract-links
 node cli.js render
 # PDF is stored in the data/ folder
 ```
