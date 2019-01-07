@@ -5,7 +5,7 @@ const sqlite = require('sqlite')
 const showdown = require('showdown')
 const mustache = require('mustache')
 const puppeteer = require('puppeteer')
-const constants = require('../constants')
+const constants = require('../shared/constants')
 
 /**
  * Process an entry loaded from the database

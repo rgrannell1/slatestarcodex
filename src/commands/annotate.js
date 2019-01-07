@@ -1,7 +1,7 @@
 
 const pulp = require('@rgrannell/pulp')
 const sqlite = require('sqlite')
-const constants = require('../constants')
+const constants = require('../shared/constants')
 const dbUtils = require('../shared/database')
 const moment = require('moment')
 

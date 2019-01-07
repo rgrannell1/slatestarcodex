@@ -1,5 +1,5 @@
 
-const constants = require('../constants')
+const constants = require('../shared/constants')
 const sqlite = require('sqlite')
 
 /**

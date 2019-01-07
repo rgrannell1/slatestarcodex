@@ -1,7 +1,7 @@
 
 const chalk = require('chalk')
 const cheerio = require('cheerio')
-const constants = require('../constants')
+const constants = require('../shared/constants')
 const pulp = require('@rgrannell/pulp')
 const puppeteer = require('puppeteer')
 const retryPromise = require('promise-retry')
@@ -126,7 +126,6 @@ const downloadMissingContent = async (links, emitter) => {
   const browser = await puppeteer.launch()
 
   for (let {link} of required) {
-
     ++count
 
     emitter.emit(pulp.events.subTaskProgress, `downloading and storing "${chalk.bold(link)}" (${count} of ${required.length})`)
