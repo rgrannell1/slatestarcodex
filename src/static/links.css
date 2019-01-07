@@ -1,0 +1,57 @@
+
+html * {
+  font-family: 'Lora', sans-serif;
+  font-size: 1.1em;
+}
+
+article {
+  margin-bottom: 200px;
+}
+
+body {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.01rem;
+  word-wrap: break-word;
+  text-rendering: optimizeLegibility;
+
+  box-sizing: border-box;
+  display: block;
+  line-height: 1.7;
+}
+
+h1 {
+  color: #000;
+  font-size: 36px;
+  letter-spacing: -0.05rem;
+  page-break-before: always;
+}
+
+#ssc_title {
+  font-size: 72px;
+  text-align: 'center';
+}
+
+a {
+  color: rgb(19, 127, 179);
+}
+
+blockquote {
+  border-left: 5px solid #ddd;
+  padding-left: 20px;
+  margin: 20px 0px;
+}
+
+#sharethis, #sharethis + ul {
+  display: none;
+}
+
+p, blockquote {
+  page-break-inside: avoid;
+}
+
+@page {
+  margin: 25mm;
+}

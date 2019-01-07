@@ -1,6 +1,7 @@
 data/content.sqlite
 data/site.html
 data/site.pdf
+data/links.pdf
 data/links.html
 data/links.json
 node_modules/

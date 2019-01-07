@@ -68,7 +68,7 @@ const getDocumentSize = async fpath => {
  *
  * @return {Promise} a result promise
  */
-const renderPDFToHtml = async (paths, emitter) => {
+const renderHtmlToPdf = async (paths, emitter) => {
   const browser = await puppeteer.launch({
   	headless: true,
   	timeout: constants.timeout.loadRenderedSite
@@ -104,7 +104,7 @@ command.task = async (_, emitter) => {
   const paths = constants.paths
   const db = await sqlite.open(paths.database)
   const rendered = await renderHTML(paths, emitter)
-  await renderPDFToHtml(paths, emitter)
+  await renderHtmlToPdf(paths, emitter)
 }
 
 module.exports = command
