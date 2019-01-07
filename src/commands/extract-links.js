@@ -1,11 +1,14 @@
 
 const pulp = require('@rgrannell/pulp')
 const markdown = require('@rgrannell/markdown')
-const mustache = require('mustache')
-const fs = require('fs').promises
 const sqlite = require('sqlite')
 const showdown = require('showdown')
 const puppeteer = require('puppeteer')
+const mustache = require('mustache')
+const URL = require('url')
+const expect = require('chai').expect
+
+const fs = require('fs').promises
 
 const constants = require('../shared/constants')
 const dbUtils = require('../shared/database')
@@ -64,14 +67,30 @@ const command = {
   dependencies: []
 }
 
-/**
- * Add metadata
- *
- * @return {Promise} a result promise
- */
-command.task = async (_, emitter) => {
+const groupUrlByHost = posts => {
+  expect(posts).to.be.an('array')
+  expect(posts).to.not.be.empty
+
+  const groups = {}
+
+  posts.forEach(data => {
+    data.links.forEach(link => {
+      const host = URL.parse(link).host
+
+      groups[host] = groups.hasOwnProperty(host)
+        ? groups[host].concat([link])
+        : [link]
+    })
+  })
+
+  expect(Object.keys(groups)).to.not.be.empty
+
+  return groups
+}
+
+const extractPostLinks = async emitter => {
   const db = await sqlite.open(constants.paths.database)
-  const state = []
+  const posts = []
 
   emitter.emit(pulp.events.subTaskProgress, `extracting links from SlateStarCodex ⚗️`)
 
@@ -80,35 +99,95 @@ command.task = async (_, emitter) => {
     const links = extractLinks(body).filter(excludeLinks).sort()
 
     if (links.length > 0 && metadata.tags.includes('links')) {
-      state.push({title, links})
+      posts.push({title, links})
     }
   })
 
-  const sections = []
+  expect(posts).to.not.be.empty
+  return posts
+}
 
-  for (const {title, links} of state) {
-    const hrefs = links.map(link => {
+const render = {}
+
+render.linkPosts = posts => {
+  let sections = []
+
+  posts.forEach(data => {
+    const hrefs = data.links.map(link => {
       return markdown.link(decodeURIComponent(link), link)
     })
-    sections.push(markdown.h2(title))
-    sections.push(markdown.list(hrefs).join('\n'))
-  }
 
-  const toc = markdown.list(state.map(data => data.title))
-  const body = new showdown.Converter().makeHtml(markdown.document(sections))
-  const tableOfContents = new showdown.Converter().makeHtml(markdown.document(toc))
+    sections = sections.concat([
+      markdown.h2(data.title),
+      markdown.list(hrefs).join('\n')
+    ])
+  })
 
-  const read = (await fs.readFile(constants.paths.linksTemplate)).toString()
-  const rendered = mustache.render(read, {body, tableOfContents})
+  return sections
+}
 
+render.tableOfContents = async emitter => {
+  const posts = await extractPostLinks(emitter)
+
+  const toc = markdown.list(posts.map(data => data.title))
+  return new showdown.Converter().makeHtml(markdown.document(toc))
+}
+
+render.linksByHost = async emitter => {
+  const posts = await extractPostLinks(emitter)
+  const linksByHost = groupUrlByHost(posts)
+
+  let parts = []
+  Object.keys(linksByHost).sort().map(host => {
+    const links = linksByHost[host]
+      .sort()
+      .map(link => markdown.link(link))
+
+    parts.push(markdown.h2(host))
+    parts = parts.concat(markdown.list(links))
+  })
+
+  const html = new showdown.Converter().makeHtml(markdown.document(parts))
+  return html
+}
+
+render.body = async emitter => {
+  let body = []
+  const posts = await extractPostLinks(emitter)
+
+  posts.forEach(data => {
+    const hrefs = data.links.map(link => {
+      return markdown.link(link, link)
+    })
+
+    body = body
+      .concat([''])
+      .concat([markdown.h2(data.title)])
+      .concat(markdown.list(hrefs))
+  })
+
+  const html = new showdown.Converter().makeHtml(markdown.document(body))
+  return html
+}
+
+/**
+ * Add metadata
+ *
+ * @return {Promise} a result promise
+ */
+command.task = async (_, emitter) => {
+  const vars = {}
+  vars.body = await render.body(emitter)
+  vars.tableOfContents = await render.tableOfContents(emitter)
+  vars.byHost = await render.linksByHost(emitter)
+
+  const template = (await fs.readFile(constants.paths.linksTemplate)).toString()
+  const rendered = mustache.render(template, vars)
   await fs.writeFile(constants.paths.links, rendered)
-
   await renderHtmlToPdf({
     site: constants.paths.links,
-    pdf: constants.paths.linksPdf
+    pdf: constants.paths.linksPdf,
   }, emitter)
-
-  db.close()
 }
 
 module.exports = command
