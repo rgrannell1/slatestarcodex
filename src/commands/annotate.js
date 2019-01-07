@@ -55,11 +55,10 @@ command.task = async (_, emitter) => {
     })
 
     state.updated++
+  }, () => {
+    emitter.emit(pulp.events.subTaskProgress, `annotated all downloaded data (${state.updated} updated).`)
+//    db.close()
   })
-
-  emitter.emit(pulp.events.subTaskProgress, `annotated all downloaded data (${state.updated} updated).`)
-
-  db.close()
 }
 
 module.exports = command

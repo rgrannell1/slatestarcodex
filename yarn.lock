@@ -1016,6 +1016,18 @@ lru-cache@^4.0.1:
     pseudomap "^1.0.2"
     yallist "^2.1.2"
 
+markdown-link-extractor@1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/markdown-link-extractor/-/markdown-link-extractor-1.2.0.tgz#aecb2df2d811d9af1cc26b52de5073c2d7a9b05b"
+  integrity sha512-1unDsoZSSiF5oGFu/2y8M3E2I2YhWT/jiKGTQxa1IAmkC1OcyHo9OYNu3qCuVSj5Ty87+mFtgQxJPUfc08WirA==
+  dependencies:
+    marked "^0.4.0"
+
+marked@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-0.4.0.tgz#9ad2c2a7a1791f10a852e0112f77b571dce10c66"
+  integrity sha512-tMsdNBgOsrUophCAFQl0XPe6Zqk/uy9gnue+jIIKhykO51hxyu6uNx7zBPy0+y/WKYVZZMspV9YeXLNdKk+iYw==
+
 mem@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/mem/-/mem-1.1.0.tgz#5edd52b485ca1d900fe64895505399a0dfa45f76"

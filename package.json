@@ -7,6 +7,7 @@
     "chalk": "2.4.1",
     "cheerio": "1.0.0-rc.2",
     "feedparser": "2.2.7",
+    "markdown-link-extractor": "1.2.0",
     "moment": "2.23.0",
     "mustache": "2.3.0",
     "neodoc": "1.4.0",
