@@ -5,6 +5,9 @@
 "@rgrannell/index@../utils/packages/index":
   version "8.2.0"
 
+"@rgrannell/markdown@../utils/packages/markdown":
+  version "8.2.0"
+
 "@rgrannell/pulp@../utils/packages/pulp":
   version "8.2.0"
   dependencies:

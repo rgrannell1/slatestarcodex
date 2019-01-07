@@ -2,6 +2,7 @@
   "name": "slatestarcodex",
   "dependencies": {
     "@rgrannell/index": "../utils/packages/index",
+    "@rgrannell/markdown": "../utils/packages/markdown",
     "@rgrannell/pulp": "../utils/packages/pulp",
     "chai": "4.2.0",
     "chalk": "2.4.1",
