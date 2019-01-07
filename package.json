@@ -10,7 +10,7 @@
     "feedparser": "2.2.7",
     "markdown-link-extractor": "1.2.0",
     "moment": "2.23.0",
-    "mustache": "2.3.0",
+    "mustache": "3.0.1",
     "neodoc": "1.4.0",
     "node-europa": "4.0.0",
     "node-rake": "1.0.0",

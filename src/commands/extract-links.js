@@ -1,6 +1,7 @@
 
 const pulp = require('@rgrannell/pulp')
 const markdown = require('@rgrannell/markdown')
+const mustache = require('mustache')
 const fs = require('fs').promises
 const sqlite = require('sqlite')
 const showdown = require('showdown')
@@ -37,10 +38,10 @@ command.task = async (_, emitter) => {
   const state = []
 
   await db.each(constants.queries.retrieveAll, async (err, row) => {
-    const {body, title} = JSON.parse(row.content)
-    const links = extractLinks(body).filter(excludeLinks)
+    const {body, title, metadata} = JSON.parse(row.content)
+    const links = extractLinks(body).filter(excludeLinks).sort()
 
-    if (links.length > 0) {
+    if (links.length > 0 && metadata.tags.includes('links')) {
       state.push({title, links})
     }
   })
@@ -48,15 +49,21 @@ command.task = async (_, emitter) => {
   const sections = []
 
   for (const {title, links} of state) {
+    const hrefs = links.map(link => {
+      return markdown.link(link, link)
+    })
     sections.push(markdown.h2(title))
-    sections.push(markdown.list(links).join('\n'))
+    sections.push(markdown.list(hrefs).join('\n'))
   }
 
-  const document = new showdown.Converter().makeHtml(markdown.document(sections))
+  const body = new showdown.Converter().makeHtml(markdown.document(sections))
 
-  await fs.writeFile(constants.paths.links, document)
-  emitter.emit(pulp.events.subTaskProgress, `annotated all downloaded data (${state.updated} updated).`)
+  const read = (await fs.readFile(constants.paths.linksTemplate)).toString()
+  const rendered = mustache.render(read, {
+    body: body
+  })
 
+  await fs.writeFile(constants.paths.links, rendered)
   db.close()
 }
 

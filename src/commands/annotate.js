@@ -42,7 +42,7 @@ command.task = async (_, emitter) => {
   const db = await sqlite.open(constants.paths.database)
   const state = {updated: 0}
 
-  db.each(constants.queries.retrieveAll, async (err, row) => {
+  await db.each(constants.queries.retrieveAll, async (err, row) => {
     const data = JSON.parse(row.content)
     data.metadata = {tags: []}
 
@@ -55,10 +55,10 @@ command.task = async (_, emitter) => {
     })
 
     state.updated++
-  }, () => {
-    emitter.emit(pulp.events.subTaskProgress, `annotated all downloaded data (${state.updated} updated).`)
-//    db.close()
   })
+
+  emitter.emit(pulp.events.subTaskProgress, `annotated all downloaded data (${state.updated} updated).`)
+  db.close()
 }
 
 module.exports = command

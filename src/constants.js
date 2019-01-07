@@ -18,7 +18,8 @@ const constants = {
   paths: {
     links: path.join(__dirname, '../data/links.html'),
     database: path.join(__dirname, '../data/content.sqlite'),
-    template: path.join(__dirname, '../src/static/template.html'),
+    template: path.join(__dirname, '../src/static/blog-template.html'),
+    linksTemplate: path.join(__dirname, '../src/static/links-template.html'),
     site: path.join(__dirname, '../data/site.html'),
     pdf: path.join(__dirname, '../data/site.pdf')
   },
