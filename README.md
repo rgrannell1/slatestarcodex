@@ -33,7 +33,7 @@ This project will be kept in a working state, but no enhancements are planned.
 
 MIT License
 
-Copyright (c) 2018 Ryan Grannell
+Copyright (c) 2018 Róisín Grannell
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
